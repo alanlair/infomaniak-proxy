@@ -7,11 +7,20 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Autoriser les requêtes depuis votre PWA
-app.use(cors({
-  origin: 'https://srv-ped2.iut-acv_univ-smb.fr', // ⚠️ Remplacez par votre domaine réel
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+// Middleware pour gérer les requêtes CORS
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'https://srv-ped2.iut-acv_univ-smb.fr'); // ⚠️ Votre domaine
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-API-Key');
+  res.header('Access-Control-Allow-Credentials', 'true'); // Si vous utilisez des cookies
+
+  // Gérer les requêtes OPTIONS (preflight)
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+
+  next();
+});
 
 // Middleware pour parser le JSON
 app.use(express.json());
